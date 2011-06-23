@@ -3,7 +3,9 @@ use inc::Module::Install;
 name 'WWW-BBS-2ch';
 all_from 'lib/WWW/BBS/2ch.pm';
 
-# requires '';
+requires 'Class::Accessor::Lite';
+requires 'Encode';
+requires 'LWP::UserAgent';
 
 tests 't/*.t';
 author_tests 'xt';
