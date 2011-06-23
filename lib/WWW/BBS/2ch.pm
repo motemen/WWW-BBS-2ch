@@ -4,8 +4,10 @@ use warnings;
 use WWW::BBS::2ch::URL;
 use WWW::BBS::2ch::Board;
 use WWW::BBS::2ch::Thread;
-use Encode;
+use URI::Fetch;
 use LWP::UserAgent;
+use HTTP::Status qw(HTTP_OK HTTP_PARTIAL_CONTENT);
+use Encode;
 use Class::Accessor::Lite
     rw => [ qw(ua cache encoding) ];
 
@@ -21,8 +23,40 @@ sub new {
 }
 
 sub fetch {
-    my ($self, $url) = @_;
-    my $res = $self->ua->get($url);
+    my ($self, $url, $option) = @_;
+
+    my $cached_content;
+    if ($option->{delta}) {
+        if (my $cached_res = URI::Fetch->fetch($url, Cache => $self->cache, NoNetwork => 1)) {
+            $cached_content = $cached_res->content;
+        }
+    }
+
+    $self->ua->set_my_handler(
+        request_prepare => $cached_content && sub {
+            my $req = shift;
+            if ($req->uri eq $url) {
+                $req->remove_header('Accept-Encoding');
+                $req->push_header(Range => sprintf('bytes=%d-', length($cached_content) - 1));
+            }
+        }
+    );
+
+    $self->ua->set_my_handler(
+        response_done => $cached_content && sub {
+            my $res = shift;
+            if ($res->request->uri eq $url && $res->code == HTTP_PARTIAL_CONTENT) {
+                $res->code(HTTP_OK);
+                $res->remove_header('Content-Range');
+                $res->content($cached_content . $res->content);
+                $res->header('Content-Length' => length $res->content);
+            }
+        }
+    );
+
+    my $res = URI::Fetch->fetch($url, UserAgent => $self->ua, Cache => $self->cache)
+        or die URI::Fetch->errstr;
+
     return decode($self->encoding, $res->content);
 }
 

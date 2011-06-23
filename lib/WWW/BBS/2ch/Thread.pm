@@ -16,17 +16,18 @@ sub new {
 sub update {
     my $self = shift;
 
-    my $no = scalar @{ $self->res_list };
+    $self->res_list([]);
 
-    my $content = $self->api->fetch($self->url->dat);
+    my $content = $self->api->fetch($self->url->dat, { delta => 1 });
+    my $no = 1;
     foreach (split /\n/, $content) {
-        my ($name, $mail, $meta, $html_body) = split /<>/, $_, 4 or next;
+        my ($name, $mail, $meta, $html_body) = split /<>/, $_ or next;
         my $res = WWW::BBS::2ch::Res->new(
             name      => $name,
-            tail      => $mail,
+            mail      => $mail,
             meta      => $meta,
             html_body => $html_body,
-            no        => ++$no,
+            no        => $no++,
         );
         push @{ $self->res_list }, $res;
     }
