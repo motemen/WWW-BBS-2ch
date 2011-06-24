@@ -24,7 +24,7 @@ sub parse {
         );
     }
 
-    confess "Could not parse URL: $url";
+    croak "Could not parse URL: $url";
 }
 
 sub subject {

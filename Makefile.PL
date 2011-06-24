@@ -3,6 +3,7 @@ use inc::Module::Install;
 name 'WWW-BBS-2ch';
 all_from 'lib/WWW/BBS/2ch.pm';
 
+requires 'Carp';
 requires 'Class::Accessor::Lite';
 requires 'Encode';
 requires 'LWP::UserAgent';
