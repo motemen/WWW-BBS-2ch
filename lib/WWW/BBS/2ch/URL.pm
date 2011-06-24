@@ -3,24 +3,24 @@ use strict;
 use warnings;
 use Carp;
 use Class::Accessor::Lite
-    rw => [ qw(host board id) ],
+    rw => [ qw(host board_key id) ],
     new => 1;
 
 sub parse {
     my ($class, $url) = @_;
 
-    if (my ($host, $board, $id) = $url =~ m#^http://(\w+\.(?:2ch\.net|\.bbspink\.com))/test/read.cgi/([^/]+)/(\d+)#) {
+    if (my ($host, $board_key, $id) = $url =~ m#^http://(\w+\.(?:2ch\.net|bbspink\.com))/test/read\.cgi/([^/]+)/(\d+)#) {
         return $class->new(
-            host  => $host,
-            board => $board,
-            id    => $id,
+            host      => $host,
+            board_key => $board_key,
+            id        => $id,
         );
     }
     
-    if (my ($host, $board) = $url =~ m#^http://(\w+\.(?:2ch\.net|bbspink\.com))/([^/]+)/#) {
+    if (my ($host, $board_key) = $url =~ m#^http://(\w+\.(?:2ch\.net|bbspink\.com))/([^/]+)/#) {
         return $class->new(
-            host  => $host,
-            board => $board,
+            host      => $host,
+            board_key => $board_key,
         );
     }
 
@@ -29,21 +29,31 @@ sub parse {
 
 sub subject {
     my $self = shift;
-    return sprintf 'http://%s/%s/subject.txt', $self->host, $self->board;
+    return sprintf 'http://%s/%s/subject.txt', $self->host, $self->board_key;
 }
 
 sub dat {
     my $self = shift;
-    return sprintf 'http://%s/%s/dat/%s.dat', $self->host, $self->board, $self->id;
+    return sprintf 'http://%s/%s/dat/%s.dat', $self->host, $self->board_key, $self->id;
+}
+
+sub board {
+    my $self = shift;
+    return sprintf 'http://%s/%s/', $self->host, $self->board_key;
+}
+
+sub thread {
+    my $self = shift;
+    return sprintf 'http://%s/test/read.cgi/%s/%s', $self->host, $self->board_key, $self->id;
 }
 
 sub with_id {
     my ($self, $id) = @_;
     my $class = ref $self;
     return $class->new(
-        host  => $self->host,
-        board => $self->board,
-        id    => $id,
+        host      => $self->host,
+        board_key => $self->board_key,
+        id        => $id,
     );
 }
 
