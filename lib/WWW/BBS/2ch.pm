@@ -22,8 +22,15 @@ sub new {
     }, $class;
 }
 
+# $api->fetch($url, { delta => 1 | 0, cache => 1 | 0 });
 sub fetch {
     my ($self, $url, $option) = @_;
+
+    if ($option->{cache}) {
+        my $res = URI::Fetch->fetch($url, Cache => $self->cache, NoNetwork => 1)
+            or return undef;
+        return decode($self->encoding, $res->content);
+    }
 
     my $cached_content;
     if ($option->{delta}) {
