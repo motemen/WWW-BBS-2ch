@@ -91,15 +91,32 @@ __END__
 
 =head1 NAME
 
-WWW::BBS::2ch -
+WWW::BBS::2ch - 2ch.net/bbspink client
 
 =head1 SYNOPSIS
 
   use WWW::BBS::2ch;
 
+  my $bbs = WWW::BBS::2ch->new(cache => $cache, ua => $ua);
+  
+  my $board = $bbs->get_board('http://kamome.2ch.net/sf/');
+  $board->update;
+
+  my $thread = $board->thread_list->[0];
+  # or
+  my $thread = $bbs->get_thread('http://kamome.2ch.net/test/read.cgi/sf/1303882030/');
+
+  $thread->update;
+  # or if you want to get cached data
+  $thread->recall; 
+
+  foreach my $res (@{ $thread->res_list }) {
+      say $res->body;
+  }
+
 =head1 DESCRIPTION
 
-WWW::BBS::2ch is
+WWW::BBS::2ch provides 2ch.net/bbspink retrieval methods.
 
 =head1 AUTHOR
 
