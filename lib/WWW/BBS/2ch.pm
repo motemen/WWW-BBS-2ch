@@ -110,6 +110,8 @@ WWW::BBS::2ch - 2ch.net/bbspink client
   # or if you want to get cached data
   $thread->recall; 
 
+  $thread->parse;
+
   foreach my $res (@{ $thread->res_list }) {
       say $res->body;
   }
