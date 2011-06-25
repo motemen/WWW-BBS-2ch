@@ -6,7 +6,7 @@ use WWW::BBS::2ch::Board;
 use WWW::BBS::2ch::Thread;
 use URI::Fetch;
 use LWP::UserAgent;
-use HTTP::Status qw(HTTP_OK HTTP_PARTIAL_CONTENT);
+use HTTP::Status ':constants';
 use Encode;
 use Class::Accessor::Lite
     rw => [ qw(ua cache encoding) ];
@@ -15,11 +15,23 @@ our $VERSION = '0.01';
 
 sub new {
     my $class = shift;
-    return bless {
-        ua => LWP::UserAgent->new(agent => 'Monazilla/1.00'),
+    my $self = bless {
+        ua => LWP::UserAgent->new(agent => "Monazilla/1.00 WWW::BBS::2ch/$VERSION"),
         encoding => 'shift_jis',
         @_,
     }, $class;
+
+    # 人大杉、バーボンなどは 302 になる
+    $self->ua->add_handler(
+        response_done => sub {
+            my $res = shift;
+            if ($res->code eq HTTP_FOUND) {
+                $res->code(HTTP_FORBIDDEN);
+            }
+        }
+    );
+
+    return $self;
 }
 
 # $api->fetch($url, { delta => 1 | 0, cache => 1 | 0 });
