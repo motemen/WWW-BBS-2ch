@@ -73,8 +73,7 @@ sub fetch {
         }
     );
 
-    my $res = URI::Fetch->fetch($url, UserAgent => $self->ua, Cache => $self->cache)
-        or die URI::Fetch->errstr;
+    my $res = URI::Fetch->fetch($url, UserAgent => $self->ua, Cache => $self->cache) or return undef;
 
     return decode($self->encoding, $res->content);
 }

@@ -19,6 +19,7 @@ sub update {
     if (defined $content) {
         $self->content($content);
     }
+    return $content;
 }
 
 sub recall {
@@ -27,6 +28,7 @@ sub recall {
     if (defined $content) {
         $self->content($content);
     }
+    return $content;
 }
 
 sub parse {
