@@ -16,6 +16,14 @@ sub parse {
             id        => $id,
         );
     }
+
+    if (my ($host, $board_key, $id) = $url =~ m#^http://(\w+\.(?:2ch\.net|bbspink\.com))/([^/]+)/dat/(\d+)\.dat#) {
+        return $class->new(
+            host      => $host,
+            board_key => $board_key,
+            id        => $id,
+        );
+    }
     
     if (my ($host, $board_key) = $url =~ m#^http://(\w+\.(?:2ch\.net|bbspink\.com))/([^/]+)/#) {
         return $class->new(
@@ -45,6 +53,20 @@ sub board {
 sub thread {
     my $self = shift;
     return sprintf 'http://%s/test/read.cgi/%s/%s', $self->host, $self->board_key, $self->id;
+}
+
+sub dat_kako {
+    my $self = shift;
+    if (length $self->id >= 10) {
+        return sprintf 'http://%s/%s/kako/%s/%s/%s.dat', $self->host, $self->board_key, substr($self->id, 0, 4), substr($self->id, 0, 5), $self->id;
+    } else {
+        return sprintf 'http://%s/%s/kako/%s/%s.dat', $self->host, $self->board_key, substr($self->id, 0, 3), $self->id;
+    }
+}
+
+sub dat_kako_gz {
+    my $self = shift;
+    return $self->dat_kako . '.gz';
 }
 
 sub with_id {
