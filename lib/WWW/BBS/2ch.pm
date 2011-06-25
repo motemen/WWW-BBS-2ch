@@ -30,6 +30,7 @@ sub new {
             }
         }
     );
+    $self->ua->max_redirect(0);
 
     return $self;
 }
