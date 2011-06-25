@@ -21,12 +21,16 @@ sub new {
         @_,
     }, $class;
 
-    # 人大杉、バーボンなどは 302 になる
     $self->ua->add_handler(
         response_done => sub {
             my $res = shift;
+            # 人大杉、バーボンなどは 302 になる
             if ($res->code eq HTTP_FOUND) {
                 $res->code(HTTP_FORBIDDEN);
+            }
+            # dat 落ち、過去ログ倉庫にある場合は 203 になる
+            if ($res->code eq HTTP_NON_AUTHORITATIVE_INFORMATION) {
+                $res->code(HTTP_GONE);
             }
         }
     );
