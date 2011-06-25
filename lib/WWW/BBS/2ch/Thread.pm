@@ -40,10 +40,11 @@ sub parse {
 
     my $no = 1;
     foreach (split /\n/, $self->content) {
-        my ($name, $mail, $meta, $html_body, $title) = split /<>/, $_ or next;
+        my ($name, $mail, $meta, $html_body, $title) = split /<>/, $_ or return 0;
         if (defined $title && !defined $self->title) {
             $self->title($title);
         }
+        return 0 unless defined $html_body;
         my $res = WWW::BBS::2ch::Res->new(
             name      => $name,
             mail      => $mail,
@@ -53,6 +54,8 @@ sub parse {
         );
         push @{ $self->res_list }, $res;
     }
+
+    return 1;
 }
 
 1;
