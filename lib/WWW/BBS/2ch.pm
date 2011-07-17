@@ -27,10 +27,12 @@ sub new {
             # 人大杉、バーボンなどは 302 になる
             if ($res->code eq HTTP_FOUND) {
                 $res->code(HTTP_FORBIDDEN);
+                $res->message(HTTP::Status::status_message($res->code));
             }
             # dat 落ち、過去ログ倉庫にある場合は 203 になる
             if ($res->code eq HTTP_NON_AUTHORITATIVE_INFORMATION) {
                 $res->code(HTTP_GONE);
+                $res->message(HTTP::Status::status_message($res->code));
             }
         }
     );
