@@ -9,7 +9,7 @@ use LWP::UserAgent;
 use HTTP::Status ':constants';
 use Encode;
 use Class::Accessor::Lite
-    rw => [ qw(ua cache encoding) ];
+    rw => [ qw(ua cache encoding last_response) ];
 
 our $VERSION = '0.01';
 
@@ -34,6 +34,7 @@ sub new {
                 $res->code(HTTP_GONE);
                 $res->message(HTTP::Status::status_message($res->code));
             }
+            $self->last_response($res);
         }
     );
     $self->ua->max_redirect(0);
@@ -101,6 +102,12 @@ sub get_thread {
         url => $url,
         api => $self,
     );
+}
+
+sub last_status_line {
+    my $self = shift;
+    my $res = $self->last_response or return undef;
+    return $res->status_line;
 }
 
 1;
