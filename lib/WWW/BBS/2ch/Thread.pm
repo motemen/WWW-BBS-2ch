@@ -40,6 +40,7 @@ sub parse {
 
     my $no = 1;
     foreach (split /\n/, $self->content) {
+        next unless defined $_ && length $_;
         my ($name, $mail, $meta, $html_body, $title) = split /<>/, $_ or return 0;
         if (defined $title && !defined $self->title) {
             $self->title($title);
