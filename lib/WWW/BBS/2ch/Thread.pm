@@ -31,29 +31,33 @@ sub recall {
     return $content;
 }
 
+# $thread->parse(no_bless => 0)
 sub parse {
-    my $self = shift;
+    my ($self, %args) = @_;
 
     return unless defined $self->content;
 
     $self->res_list([]);
 
     my $no = 1;
-    foreach (split /\n/, $self->content) {
+    open my $fh, '<:utf8', \$self->content;
+    while (<$fh>) {
+        chomp;
         next unless defined $_ && length $_;
         my ($name, $mail, $meta, $html_body, $title) = split /<>/, $_ or return 0;
-        if (defined $title && !defined $self->title) {
-            $self->title($title);
+        if (defined $title && !defined $self->{title}) {
+            $self->{title} = $title;
         }
         return 0 unless defined $html_body;
-        my $res = WWW::BBS::2ch::Res->new(
+        my $res = {
             name      => $name,
             mail      => $mail,
             meta      => $meta,
             html_body => $html_body,
             no        => $no++,
-        );
-        push @{ $self->res_list }, $res;
+        };
+        $res = WWW::BBS::2ch::Res->new($res) unless $args{no_bless};
+        push @{ $self->{res_list} }, $res;
     }
 
     return 1;
