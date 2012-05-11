@@ -81,7 +81,14 @@ sub fetch {
         }
     );
 
-    my $res = URI::Fetch->fetch($url, UserAgent => $self->ua, Cache => $self->cache) or return undef;
+    my $res = URI::Fetch->fetch($url, UserAgent => $self->ua, Cache => $self->cache, ForceResponse => 1);
+    if ($res->is_error) {
+        if ($option->{delta} && $res->http_status == HTTP_REQUEST_RANGE_NOT_SATISFIABLE) {
+            return $self->fetch($url);
+        } else {
+            return undef;
+        }
+    }
 
     return decode($self->encoding, $res->content);
 }
