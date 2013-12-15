@@ -17,7 +17,7 @@ sub new {
     my $class = shift;
     my $self = bless {
         ua => LWP::UserAgent->new(agent => "Monazilla/1.00 WWW::BBS::2ch/$VERSION"),
-        encoding => 'shift_jis',
+        encoding => 'cp932',
         @_,
     }, $class;
 
