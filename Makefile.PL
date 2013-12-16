@@ -14,6 +14,7 @@ tests 't/*.t';
 author_tests 'xt';
 
 test_requires 'Test::More';
+test_requires 'Test::MockObject';
 
 auto_set_repository;
 auto_include;
