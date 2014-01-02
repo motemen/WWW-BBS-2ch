@@ -1,6 +1,7 @@
 package WWW::BBS::2ch::Thread;
 use strict;
 use warnings;
+use Encode ();
 use WWW::BBS::2ch::Res;
 use Class::Accessor::Lite rw => [ qw(api url title content res_list) ];
 
@@ -40,7 +41,7 @@ sub parse {
     $self->res_list([]);
 
     my $no = 1;
-    open my $fh, '<:utf8', \$self->content;
+    open my $fh, '<:utf8', \Encode::encode_utf8($self->content);
     while (<$fh>) {
         chomp;
         next unless defined $_ && length $_;
