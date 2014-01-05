@@ -6,6 +6,7 @@ use WWW::BBS::2ch;
 
 subtest 'Strings with code points over 0xFF may not be mapped into in-memory file handles' => sub {
     plan skip_all => 'version is less then 5.18' if $^V lt v5.18.0;
+    plan skip_all => 'set TEST_LIVE to run this test' unless $ENV{TEST_LIVE};
 
     my $bbs = WWW::BBS::2ch->new;
     my $board = $bbs->get_board('http://headline.2ch.net/bbynamazu/');
